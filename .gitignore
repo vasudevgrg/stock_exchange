@@ -1,0 +1,16 @@
+stock-backend/node_modules
+stock-backend/dist
+
+api-server/node_modules
+api-server/dist
+
+rabbitmq/node_modules
+rabbitmq/dist
+
+frontend/node_modules
+.DS_Store
+*.log
+*.env
+*.env.local
+*.env.development
+*.env.test  
