@@ -30,13 +30,15 @@ class MarketService{
         type: 'buy',
         market_id: market_id
       }, limit,
-      order: ['DESC']
+      order: [['price', 'DESC']],
+      raw: true
     });
     const sellOrders = await this.orderRepository.find({
       where: {
         type: 'sell'
       }, limit,
-      order: ['ASC']
+      order: [['price', 'ASC']],
+      raw: true
     });
 
     const market = await this.marketRepository.findOne({
@@ -51,9 +53,20 @@ class MarketService{
     });
 
     return {
-      buyOrders, sellOrders, market, trades
+      buyOrders: this.addTotal(buyOrders), sellOrders: this.addTotal(sellOrders), market, trades
     };
   }
+
+   addTotal(orders: Order[]) {
+    let total =0;
+    return orders.map(order => {
+      const currSum = total+ order.price;
+      total = currSum;
+      return {...order, total: currSum}
+    })
+
+  }
+
 }
 
 export const marketService = new MarketService();

@@ -12,7 +12,7 @@ import {
   NotEmpty,
 } from "sequelize-typescript";
 import Trade from "./trade.model";
-import { BaseModel } from "./base.model";
+import { BaseModel } from "./common/base.model";
 
 @Table({
   tableName: "markets",

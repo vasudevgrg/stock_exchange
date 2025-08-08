@@ -3,6 +3,7 @@ import Market from "../models/market.model";
 import Order from "../models/order.model";
 import User from "../models/user.model";
 import Trade from "../models/trade.model";
+import path from "path";
 
 const models = [Market, Order, User, Trade];
 
@@ -13,12 +14,13 @@ const devOptions: SequelizeOptions = {
   models: models,
   username: 'postgres',
   password: 'vasuDEV7?',
-  database: 'stock_market',
-  repositoryMode: true,
+  database: 'stock_market'
 };
 
 const sequelize = new Sequelize(
   devOptions
 );
 
-export { sequelize };
+//sequelize.addModels(models); 
+
+export default sequelize;

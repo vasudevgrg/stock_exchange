@@ -11,7 +11,7 @@ import {
   Unique,
 } from "sequelize-typescript";
 import Order from "./order.model";
-import { BaseModel } from "./base.model";
+import { BaseModel } from "./common/base.model";
 
 @Table({
   tableName: "users",
