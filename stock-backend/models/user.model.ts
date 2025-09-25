@@ -63,9 +63,9 @@ class User extends BaseModel<User> {
     return this.balance >= amount;
   }
 
-    addBalance(amount: number) {
-     this.balance += amount;
-     return this;
+  addBalance(amount: number) {
+    this.balance += amount;
+    return this;
   }
 }
 

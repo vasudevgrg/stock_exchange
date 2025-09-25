@@ -25,12 +25,12 @@ export default function Home() {
   }, []);
   return (
    <>
-   <div style={{display: 'flex', flexDirection: 'row', maxWidth: '70vw'}}>
+   <div style={{display: 'flex', flexDirection: 'row'}}>
    <Klines/>
    <Depth/>
-   {/* <BuyAndSell/> */}
+   <BuyAndSell/>
 
-           <div>
+           {/* <div>
             <h1>Real-time Chat</h1>
             <form onSubmit={handleSubmit}>
                 <input
@@ -45,7 +45,7 @@ export default function Home() {
                     <div key={index}>{msg}</div>
                 ))}
             </div>
-        </div>
+        </div> */}
 
    </div>
    </>

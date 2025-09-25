@@ -12,7 +12,7 @@ const Depth = () => {
 
   return (
     <>
-    <div style={{display: 'flex', flexDirection: 'column'}}>
+    <div style={{display: 'flex', flexDirection: 'column', width: '30%'}}>
       <AskTable asks={sellOrders} />
       {/* <p>{trades[0].price}</p> */}
       <BidTable bids= {buyOrders}/>

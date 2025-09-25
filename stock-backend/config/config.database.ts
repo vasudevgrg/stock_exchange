@@ -13,7 +13,7 @@ const devOptions: SequelizeOptions = {
   port: Number(process.env.DEV_DB_PORT) || 5432,
   models: models,
   username: 'postgres',
-  password: 'vasuDEV7?',
+  password: 'postgres',
   database: 'stock_market'
 };
 
