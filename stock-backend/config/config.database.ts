@@ -4,8 +4,9 @@ import Order from "../models/order.model";
 import User from "../models/user.model";
 import Trade from "../models/trade.model";
 import path from "path";
+import UserMarket from "../models/user-market.model";
 
-const models = [Market, Order, User, Trade];
+const models = [Market, Order, User, Trade, UserMarket];
 
 const devOptions: SequelizeOptions = {
   dialect: "postgres",

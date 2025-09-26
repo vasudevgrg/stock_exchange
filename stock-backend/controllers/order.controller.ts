@@ -9,11 +9,8 @@ export const sellStocksOrder = async (
   next: NextFunction
 ) => {
   try {
-    await publishMessage({
-        type: ConsumerTypes.SELL_STOCKS,
-        body: req.body
-    });
-    res.status(201).json({ message: "orders sold successfully." });
+    await ordersService.sellStockService(req.body);
+    res.status(201).json({ message: "stocks sold successfully." });
   } catch (err) {
     next(err);
   }
@@ -25,12 +22,15 @@ export const buyStocksOrder = async (
   next: NextFunction
 ) => {
     try{
-    await publishMessage({
-        type: ConsumerTypes.BUY_STOCKS,
-        body: req.body
-    });
+    // await publishMessage({
+    //     type: ConsumerTypes.BUY_STOCKS,
+    //     body: req.body
+    // });
     
-    res.status(201).json({ message: "orders sold successfully." });
+    await ordersService.buyStockService(req.body);
+
+
+    res.status(201).json({ message: "stocks bought successfully." });
   } catch (err) {
     next(err);
   }

@@ -9,9 +9,12 @@ import {
   HasMany,
   Default,
   Unique,
+  BelongsToMany,
 } from "sequelize-typescript";
 import Order from "./order.model";
 import { BaseModel } from "./common/base.model";
+import UserMarket from "./user-market.model";
+import Market from "./market.model";
 
 @Table({
   tableName: "users",
@@ -59,7 +62,12 @@ class User extends BaseModel<User> {
   })
   orders?: Order[];
 
+  @BelongsToMany(() => Market, () => UserMarket)
+  markets?: Market[];
+
   checkBalance(amount: number): boolean {
+    console.log('amount: ', amount);
+    console.log('this.balance >= amount;: ', this.balance >= amount);
     return this.balance >= amount;
   }
 

@@ -3,6 +3,7 @@ import { orderControllers } from '../controllers';
 
 const router = express.Router();
 
-router.route('/sell-stocks').post(orderControllers.sellStocksOrder);
+router.route('/sell').post(orderControllers.sellStocksOrder);
+router.route('/buy').post(orderControllers.buyStocksOrder);
 
 export default router;

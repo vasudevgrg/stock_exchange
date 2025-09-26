@@ -1,18 +1,17 @@
 import {
   Table,
   Column,
-  Model,
   DataType,
-  PrimaryKey,
-  AutoIncrement,
   AllowNull,
   ForeignKey,
   HasOne,
-  BelongsTo,
   NotEmpty,
+  BelongsToMany,
 } from "sequelize-typescript";
 import Trade from "./trade.model";
 import { BaseModel } from "./common/base.model";
+import UserMarket from "./user-market.model";
+import User from "./user.model";
 
 @Table({
   tableName: "markets",
@@ -20,7 +19,6 @@ import { BaseModel } from "./common/base.model";
   timestamps: true,
 })
 class Market extends BaseModel<Market> {
-
   @NotEmpty
   @Column(DataType.STRING)
   name: string;
@@ -42,7 +40,8 @@ class Market extends BaseModel<Market> {
   })
   trade?: Trade;
 
-  
+  @BelongsToMany(() => User, () => UserMarket)
+  users?: User[];
 }
 
 export default Market;

@@ -35,6 +35,7 @@ class UserMarket extends BaseModel<UserMarket> {
 
   @NotEmpty
   @IsNumeric
+  @Column(DataType.INTEGER)
   quantity: number;
 
   @BelongsTo(() => Market, {

@@ -36,6 +36,7 @@ class OrdersService {
 
   async buyStockService(payload: BuyStock) {
     const { quantity, buy_price, user_id, market_id } = payload;
+    console.log('payload: ', payload);
     const user = await this.userRepository.findOne({ where: { id: user_id } });
     let totalPrice = quantity * buy_price;
 
