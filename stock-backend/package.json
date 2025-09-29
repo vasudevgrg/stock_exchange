@@ -8,8 +8,13 @@
     "build": "tsc",
     "db:create": "npx sequelize-cli db:create",
     "worker": "nodemon --exec ts-node rabbitmq/worker.ts",
-    "seed": "npx sequelize-cli db:seed:all",
-    "seed:undo": "npx sequelize-cli db:seed:undo:all"
+    "seed": "npm run build && npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo:all",
+    "db:create": "npx sequelize-cli db:create",
+    "db:drop": "npx sequelize-cli db:drop",
+    "up": "npm run build && npx sequelize-cli db:migrate",
+    "undo": "npx sequelize-cli db:migrate:undo",
+    "down": "npx sequelize-cli db:migrate:undo:all"
   },
   "keywords": [],
   "author": "",

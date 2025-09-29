@@ -5,21 +5,18 @@ export = {
   up: async (queryInterface: QueryInterface) => {
     await queryInterface.bulkInsert("users", [
       {
-        id: 1,
         name: "Alice",
         email: "alice@example.com",
         password: "hashedpassword1",
         balance: 10000
       },
       {
-        id: 2,
         name: "Bob",
         email: "bob@example.com",
         password: "hashedpassword2",
         balance: 15000
       },
       {
-        id: 3,
         name: "Charlie",
         email: "charlie@example.com",
         password: "hashedpassword3",

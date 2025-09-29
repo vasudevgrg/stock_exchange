@@ -19,7 +19,8 @@ import Market from "./market.model";
 @Table({
   tableName: "users",
   underscored: true,
-  timestamps: false,
+  timestamps: true,
+  paranoid: true
 })
 class User extends BaseModel<User> {
   @AllowNull(false)

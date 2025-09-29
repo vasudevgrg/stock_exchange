@@ -16,15 +16,15 @@ class BaseModel<T extends object> extends Model<T> {
 
   @Default(DataTypes.NOW)
   @Column(DataTypes.DATE)
-  declare createdAt: Date;
+  declare created_at: Date;
 
   @AllowNull(true)
   @Column(DataTypes.DATE)
-  declare updatedAt: Date | null;
+  declare updated_at: Date | null;
 
   @AllowNull(true)
   @Column(DataTypes.DATE)
-  declare deletedAt: Date | null;
+  declare deleted_at: Date | null;
 }
 
 export { BaseModel }

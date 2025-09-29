@@ -46,11 +46,11 @@ class Trade extends Model<Trade, TradeCreationAttributes> {
 
   // Associations
 
-  @BelongsTo(() => Market, {
-    foreignKey: "market_id",
-    as: "market",
-  })
-  market?: Market;
+  // @BelongsTo(() => Market, {
+  //   foreignKey: "market_id",
+  //   as: "market",
+  // })
+  // market?: Market;
 }
 
 export default Trade;

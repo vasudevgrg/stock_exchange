@@ -23,10 +23,9 @@ class Market extends BaseModel<Market> {
   @Column(DataType.STRING)
   name: string;
 
-  @ForeignKey(() => Trade)
-  @AllowNull(true)
+  @NotEmpty
   @Column(DataType.INTEGER)
-  last_trade_id: number | null;
+  current_price: number;
 
   @AllowNull(false)
   @Column(DataType.DATE)
@@ -34,11 +33,11 @@ class Market extends BaseModel<Market> {
 
   // Relations
 
-  @HasOne(() => Trade, {
-    foreignKey: "market_id",
-    as: "trade",
-  })
-  trade?: Trade;
+  // @HasOne(() => Trade, {
+  //   foreignKey: "market_id",
+  //   as: "trade",
+  // })
+  // trade?: Trade;
 
   @BelongsToMany(() => User, () => UserMarket)
   users?: User[];

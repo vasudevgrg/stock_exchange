@@ -15,7 +15,7 @@ const startServer = async () => {
         await sequelize.authenticate();
         console.log("Connection has been established successfully.");
 
-        await sequelize.sync();
+        //await sequelize.sync();
 
         app.listen(8081, () => {
             console.log('listening to 8081');

@@ -8,7 +8,6 @@ export = {
     // 15 Buy orders
     for (let i = 1; i <= 15; i++) {
       orders.push({
-        id: i,
         type: "buy",
         price: 3000000 + i * 10000,
         quantity: 1 + (i % 3),
@@ -20,7 +19,6 @@ export = {
     // 15 Sell orders
     for (let i = 16; i <= 30; i++) {
       orders.push({
-        id: i,
         type: "sell",
         price: 3050000 + (i - 15) * 9000,
         quantity: 1 + ((i - 1) % 4),

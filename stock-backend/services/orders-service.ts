@@ -10,14 +10,14 @@ import Market from "../models/market.model";
 
 interface BuyStock {
   quantity: number;
-  buy_price: number;
+  price: number;
   user_id: number;
   market_id: number;
 }
 
 interface SellStock {
   quantity: number;
-  sell_price: number;
+  price: number;
   user_id: number;
   market_id: number;
 }
@@ -35,96 +35,99 @@ class OrdersService {
   }
 
   async buyStockService(payload: BuyStock) {
-    const { quantity, buy_price, user_id, market_id } = payload;
-    console.log('payload: ', payload);
+    const { quantity, price, user_id, market_id } = payload;
+    console.log("payload: ", payload);
     const user = await this.userRepository.findOne({ where: { id: user_id } });
-    let totalPrice = quantity * buy_price;
+    let totalPrice = quantity * price;
 
-    if (!user?.checkBalance(totalPrice)) {
-      throw new Error("user doesnt have enough balance.");
-    }
-
-    const order = await this.orderRepository.create({
-      type: "buy",
-      price: buy_price,
-      quantity: quantity,
-      market_id,
-      user_id,
-    });
-    const sellOrders = await this.orderRepository.find({
-      where: {
-        price: { [Op.lte]: buy_price },
-        type: 'sell'
-      },
-      order: ["price", "ASC"],
-    });
-
-    if (sellOrders.length) {
-      let i = 0;
-      let sellerOrderIds = [];
-      let totalQuantity = 0;
-
-      while (totalPrice != 0 && i < sellOrders.length) {
-        const order = sellOrders[i];
-        if (order.quantity * order.price <= totalPrice) {
-          totalPrice -= order.quantity * order.price;
-          totalQuantity += order.quantity;
-        } else {
-          totalQuantity += totalPrice / order.price;
-          await this.orderRepository.update(
-            { quantity: order.quantity - totalPrice / order.price },
-            {
-              where: { id: order.id },
-              returning: true,
-            }
-          );
-          totalPrice = 0;
-        }
-        sellerOrderIds.push(order.id);
-        i++;
+    try {
+      if (!user?.checkBalance(totalPrice)) {
+        throw new Error("user doesnt have enough balance.");
       }
 
-      const trade = await this.tradeRepository.create({
-        seller_order_ids: sellerOrderIds,
-        buyer_order_ids: [order.id],
+      const order = await this.orderRepository.create({
+        type: "buy",
+        price: price,
+        quantity: quantity,
         market_id,
-        price: buy_price,
-        quantity: totalQuantity,
+        user_id,
+      });
+      const sellOrders = await this.orderRepository.find({
+        where: {
+          price: { [Op.lte]: price },
+          type: "sell",
+        },
+        order: [["price", "ASC"]],
       });
 
-      await this.marketRepository.update(
-        {
-          last_trade_id: trade.id,
-        },
-        {
-          where: {
-            id: market_id,
-          },
-          returning: true,
+      if (sellOrders.length) {
+        let i = 0;
+        let sellerOrderIds = [];
+        let totalQuantity = 0;
+
+        while (totalPrice != 0 && i < sellOrders.length) {
+          const order = sellOrders[i];
+          if (order.quantity * order.price <= totalPrice) {
+            totalPrice -= order.quantity * order.price;
+            totalQuantity += order.quantity;
+          } else {
+            totalQuantity += totalPrice / order.price;
+            await this.orderRepository.update(
+              { quantity: order.quantity - totalPrice / order.price },
+              {
+                where: { id: order.id },
+                returning: true,
+              }
+            );
+            totalPrice = 0;
+          }
+          sellerOrderIds.push(order.id);
+          i++;
         }
-      );
 
+        const trade = await this.tradeRepository.create({
+          seller_order_ids: sellerOrderIds,
+          buyer_order_ids: [order.id],
+          market_id,
+          price: price,
+          quantity: totalQuantity,
+        });
 
+        await this.marketRepository.update(
+          {
+            current_price: price,
+          },
+          {
+            where: {
+              id: market_id,
+            },
+            returning: true,
+          }
+        );
+      }
+    } catch (error: any) {
+      console.log(error);
+      throw new Error(error);
     }
   }
 
-    async sellStockService(payload: SellStock) {
-    const { quantity, sell_price, user_id, market_id } = payload;
+  async sellStockService(payload: SellStock) {
+    const { quantity, price, user_id, market_id } = payload;
     const user = await this.userRepository.findOne({ where: { id: user_id } });
-    let totalPrice = quantity * sell_price;
+    let totalPrice = quantity * price;
     const order = await this.orderRepository.create({
       type: "sell",
-      price: sell_price,
+      price: price,
       quantity: quantity,
       market_id,
       user_id,
     });
     const buyOrders = await this.orderRepository.find({
       where: {
-        price: { [Op.gte]: sell_price },
-        type: 'buy'
+        price: { [Op.gte]: price },
+        type: "buy",
       },
-      order: ["price", "DESC"],
+      order: [["price", "DESC"]],
     });
 
     if (buyOrders.length) {
@@ -156,13 +159,13 @@ class OrdersService {
         seller_order_ids: [order.id],
         buyer_order_ids: buyerOrderIds,
         market_id,
-        price: sell_price,
+        price: price,
         quantity: totalQuantity,
       });
 
       await this.marketRepository.update(
         {
-          last_trade_id: trade.id,
+          current_price: price,
         },
         {
           where: {
