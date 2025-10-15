@@ -11,6 +11,7 @@ import {
 } from "sequelize-typescript";
 import User from "./user.model";
 import Market from "./market.model";
+import { Status } from "./enums/status-enum";
 
 interface OrderCreationAttributes {
   type: string;
@@ -47,6 +48,9 @@ class Order extends Model<Order, OrderCreationAttributes>{
   @AllowNull(false)
   @Column(DataType.INTEGER)
   user_id: number;
+
+  @Column(DataType.ENUM) 
+  status: Status;
 
   // Associations
 

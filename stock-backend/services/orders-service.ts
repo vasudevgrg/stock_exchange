@@ -7,6 +7,8 @@ import TradeRepository from "../repositories/trades-repository";
 import UserRepository from "../repositories/users-repository";
 import MarketRepository from "../repositories/markets-repository";
 import Market from "../models/market.model";
+import { publishMessage } from "../rabbitmq/publish";
+import { StockEvent } from "../rabbitmq/enums/event-enum";
 
 interface BuyStock {
   quantity: number;
@@ -114,6 +116,7 @@ class OrdersService {
   async sellStockService(payload: SellStock) {
     const { quantity, price, user_id, market_id } = payload;
     const user = await this.userRepository.findOne({ where: { id: user_id } });
+    const market = await this.marketRepository.findOne({where: {id: market_id}})
     let totalPrice = quantity * price;
     const order = await this.orderRepository.create({
       type: "sell",
@@ -162,6 +165,8 @@ class OrdersService {
         price: price,
         quantity: totalQuantity,
       });
+
+      await publishMessage({marketSymbol: market?.name, event: StockEvent, data: trade});
 
       await this.marketRepository.update(
         {
