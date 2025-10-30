@@ -1,9 +1,11 @@
 "use strict";
 
+import { DataTypes, QueryInterface } from "sequelize";
+
 module.exports = {
-  async up(queryInterface, DataTypes) {
+  async up(queryInterface: QueryInterface) {
     await queryInterface.createTable(
-      "orders",
+      "trades",
       {
         id: {
           type: DataTypes.INTEGER,
@@ -11,16 +13,12 @@ module.exports = {
           autoIncrement: true,
           allowNull: false,
         },
-        type: {
-          type: DataTypes.STRING,
+        seller_order_ids: {
+          type: DataTypes.JSONB,
           allowNull: false,
         },
-        price: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        quantity: {
-          type: DataTypes.INTEGER,
+        buyer_order_ids: {
+          type: DataTypes.JSONB,
           allowNull: false,
         },
         market_id: {
@@ -33,21 +31,19 @@ module.exports = {
           onUpdate: "CASCADE",
           onDelete: "CASCADE"
         },
-        user_id: {
+        price: {
           type: DataTypes.INTEGER,
           allowNull: false,
-          references: {
-            model: "users",
-            key: "id",
-          },
-          onUpdate: "CASCADE",
-          onDelete: "CASCADE"
+        },
+        quantity: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
         }
       }
     );
   },
 
-  async down(queryInterface, DataTypes) {
-    await queryInterface.dropTable("orders");
+  async down(queryInterface: QueryInterface) {
+    await queryInterface.dropTable("trades");
   },
 };

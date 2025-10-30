@@ -11,5 +11,5 @@
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false
   },
-  "include": ["/**/*"]
+"include": ["**/*.ts"]
 }

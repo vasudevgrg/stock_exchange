@@ -1,4 +1,4 @@
-export class Status {
-  PENDING = "pending";
-  SOLD = "sold";
+export enum Status {
+  PENDING = "pending",
+  SOLD = "sold"
 }

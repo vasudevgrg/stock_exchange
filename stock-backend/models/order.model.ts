@@ -26,7 +26,7 @@ interface OrderCreationAttributes {
   underscored: true,
   timestamps: false,
 })
-class Order extends Model<Order, OrderCreationAttributes>{
+class Order extends Model<Order, OrderCreationAttributes> {
   @AllowNull(false)
   @Column(DataType.STRING)
   type: string;
@@ -49,10 +49,11 @@ class Order extends Model<Order, OrderCreationAttributes>{
   @Column(DataType.INTEGER)
   user_id: number;
 
-  @Column(DataType.ENUM) 
+  @Column({
+    type: DataType.ENUM(...Object.values(Status)),
+    allowNull: false,
+  })
   status: Status;
-
-  // Associations
 
   @BelongsTo(() => User, {
     foreignKey: "user_id",

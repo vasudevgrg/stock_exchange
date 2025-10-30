@@ -1,7 +1,8 @@
-"use strict";
+
+import { DataTypes, QueryInterface } from "sequelize";
 
 module.exports = {
-  async up(queryInterface, DataTypes) {
+  async up(queryInterface: QueryInterface) {
     await queryInterface.createTable(
       "markets",
       {
@@ -19,16 +20,6 @@ module.exports = {
           type: DataTypes.INTEGER,
           allowNull:  false
         },
-        created_at: {
-          type: DataTypes.DATE,
-          defaultValue: DataTypes.fn("now"),
-          allowNull: false,
-        },
-        updated_at: {
-          type: DataTypes.DATE,
-          defaultValue: DataTypes.fn("now"),
-          allowNull: true,
-        },
         deleted_at: {
           type: DataTypes.DATE,
           allowNull: true,
@@ -37,7 +28,7 @@ module.exports = {
     );
   },
 
-  async down(queryInterface, DataTypes) {
+  async down(queryInterface: QueryInterface) {
     await queryInterface.dropTable("markets");
   },
 };

@@ -38,7 +38,11 @@ class OrdersService {
 
   async buyStockService(payload: BuyStock) {
     const { quantity, price, user_id, market_id } = payload;
-    console.log("payload: ", payload);
+    const market = await this.marketRepository.findOne({
+      where: { id: market_id },
+    });
+
+    if(!market) throw new Error("market doesnt exist.");
     const user = await this.userRepository.findOne({ where: { id: user_id } });
     let totalPrice = quantity * price;
 
@@ -95,6 +99,12 @@ class OrdersService {
           quantity: totalQuantity,
         });
 
+        await publishMessage({
+          marketSymbol: market?.name,
+          event: StockEvent.TRADE,
+          data: trade,
+        });
+
         await this.marketRepository.update(
           {
             current_price: price,
@@ -116,7 +126,11 @@ class OrdersService {
   async sellStockService(payload: SellStock) {
     const { quantity, price, user_id, market_id } = payload;
     const user = await this.userRepository.findOne({ where: { id: user_id } });
-    const market = await this.marketRepository.findOne({where: {id: market_id}})
+    const market = await this.marketRepository.findOne({
+      where: { id: market_id },
+    });
+        if(!market) throw new Error("market doesnt exist.");
+
     let totalPrice = quantity * price;
     const order = await this.orderRepository.create({
       type: "sell",
@@ -166,7 +180,11 @@ class OrdersService {
         quantity: totalQuantity,
       });
 
-      await publishMessage({marketSymbol: market?.name, event: StockEvent, data: trade});
+      await publishMessage({
+        marketSymbol: market.name,
+        event: StockEvent.TRADE,
+        data: trade,
+      });
 
       await this.marketRepository.update(
         {
