@@ -24,7 +24,6 @@ export class WebsocketManager {
     this.wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
       console.log("New WebSocket connection established");
 
-      // Extract market_symbol from query params or URL
       const url = new URL(req.url || "", `http://${req.headers.host}`);
       console.log('url: ', url);
       const market_symbol = url.searchParams.get("market_symbol");
@@ -34,21 +33,20 @@ export class WebsocketManager {
         this.addToRoom(market_symbol, ws);
       }
 
-      ws.on("message", (data) => {
-        console.log("Received:", data.toString());
-        // Handle incoming messages
-      });
+    //   ws.on("message", (data) => {
+    //     console.log("Received:", data.toString());
+    //   });
 
-      ws.on("close", () => {
-        console.log("Connection closed");
-        if (market_symbol) {
-          this.removeFromRoom(market_symbol, ws);
-        }
-      });
+    //   ws.on("close", () => {
+    //     console.log("Connection closed");
+    //     if (market_symbol) {
+    //       this.removeFromRoom(market_symbol, ws);
+    //     }
+    //   });
 
-      ws.on("error", (error) => {
-        console.error("WebSocket error:", error);
-      });
+    //   ws.on("error", (error) => {
+    //     console.error("WebSocket error:", error);
+    //   });
     });
   }
 
@@ -72,7 +70,6 @@ export class WebsocketManager {
         `Client removed from room: ${market_symbol}. Remaining: ${room.size}`
       );
 
-      // Clean up empty rooms
       if (room.size === 0) {
         this.rooms.delete(market_symbol);
         console.log(`Room deleted: ${market_symbol}`);

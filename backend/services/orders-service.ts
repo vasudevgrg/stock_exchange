@@ -9,6 +9,8 @@ import MarketRepository from "../repositories/markets-repository";
 import Market from "../models/market.model";
 import { publishMessage } from "../rabbitmq/publish";
 import { StockEvent } from "../rabbitmq/enums/event-enum";
+import sequelize from "../config/config.database";
+import { Status } from "../models/enums/status-enum";
 
 interface BuyStock {
   quantity: number;
@@ -198,6 +200,21 @@ class OrdersService {
         }
       );
     }
+  }
+
+  async getCurrentOrderBook(market_id: number) {
+    const  buyOrders = await this.orderRepository.find({
+      where: {
+        market_id: market_id,
+        type: 'buy',
+        status: Status.PENDING
+      },
+      attributes: [
+        sequelize.fn('sum', sequelize.col('price'), 'group_by_price')
+      ],
+      group: ['price'],
+      raw: true
+    })
   }
 }
 
