@@ -1,5 +1,5 @@
-stock-backend/node_modules
-stock-backend/dist
+backend/node_modules
+backend/dist
 
 api-server/node_modules
 api-server/dist
