@@ -26,7 +26,9 @@ export class WebsocketManager {
 
       // Extract market_symbol from query params or URL
       const url = new URL(req.url || "", `http://${req.headers.host}`);
+      console.log('url: ', url);
       const market_symbol = url.searchParams.get("market_symbol");
+      console.log('market_symbol: ', market_symbol);
 
       if (market_symbol) {
         this.addToRoom(market_symbol, ws);

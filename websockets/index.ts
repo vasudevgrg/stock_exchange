@@ -1,8 +1,12 @@
 import express from "express";
 import { WebsocketManager } from "./websocker-manager";
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+    origin: '*'
+}));
 
 const PORT = 9000;
 
@@ -16,7 +20,14 @@ const server = app.listen(PORT, () => {
 const wsManager = WebsocketManager.getInstance();
 wsManager.attachToServer(server);
 
+// app.post('/subscribe', (req, res) => {
+//     const {market_symbol, ws} = req.body;
+//     wsManager.
+
+// })
+
 app.post("/publish", (req, res) => {
+    console.log('req: ', req.body);
   const { market_symbol, message } = req.body;
 
   if (!market_symbol || !message) {
