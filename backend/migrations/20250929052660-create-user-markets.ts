@@ -34,7 +34,7 @@ module.exports = {
           onDelete: "CASCADE"
         },
         quantity: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.DECIMAL(10, 2),
           allowNull: false,
         },
         created_at: {

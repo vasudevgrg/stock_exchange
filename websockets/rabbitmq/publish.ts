@@ -1,7 +1,6 @@
 import { StockEvent } from "./enums/event-enum";
 import { connectRabbitMQ, getRabbitChannel, closeRabbitMQ } from "./rabbitmq";
 
-// Use a new exchange name to distinguish it
 const EXCHANGE_NAME = "stock.";
 
 type MessageData = {
@@ -12,21 +11,21 @@ type MessageData = {
 
 export const publishMessage = async (messageData: MessageData): Promise<void> => {
   try {
-    const { marketSymbol, event, data } = messageData;
+    const { marketSymbol, data } = messageData;
     await connectRabbitMQ();
     const channel = getRabbitChannel();
-
+    const exchange = composeExchangeName(marketSymbol);
     await channel.assertExchange(
-      composeExchangeName(marketSymbol, event),
+      exchange,
       "fanout",
       { durable: true }
     );
 
     const message = JSON.stringify(data);
-    channel.publish(EXCHANGE_NAME, "", Buffer.from(message));
+    channel.publish(exchange, "", Buffer.from(message));
 
     console.log(
-      `[x] Sent broadcast: '${message}' to fanout exchange: ${EXCHANGE_NAME}`
+      `[x] Sent broadcast: '${message}' to fanout exchange: ${exchange}`
     );
   } catch (error) {
     console.error("Error publishing message:", error);
@@ -34,6 +33,6 @@ export const publishMessage = async (messageData: MessageData): Promise<void> =>
   }
 };
 
-function composeExchangeName(symbol: string, event: StockEvent) {
-  return EXCHANGE_NAME.concat(symbol, ".", event);
+function composeExchangeName(symbol: string) {
+  return EXCHANGE_NAME.concat(symbol);
 }

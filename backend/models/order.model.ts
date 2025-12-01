@@ -19,6 +19,7 @@ interface OrderCreationAttributes {
   quantity: number;
   market_id: number;
   user_id: number;
+  status?: Status;
 }
 
 @Table({
@@ -36,7 +37,7 @@ class Order extends Model<Order, OrderCreationAttributes> {
   price: number;
 
   @AllowNull(false)
-  @Column(DataType.INTEGER)
+  @Column(DataType.DECIMAL(10, 2))
   quantity: number;
 
   @ForeignKey(() => Market)

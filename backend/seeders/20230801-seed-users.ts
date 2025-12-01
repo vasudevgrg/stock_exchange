@@ -21,8 +21,43 @@ export = {
         email: "charlie@example.com",
         password: "hashedpassword3",
         balance: 20000
-      }
-      // You can add more users as needed
+      },
+            {
+        name: "Charlie",
+        email: "charli1e@example.com",
+        password: "hashedpassword31",
+        balance: 20000
+      },      {
+        name: "Charli2e",
+        email: "charli12e@example.com",
+        password: "hashedpassword3",
+        balance: 20000
+      },      {
+        name: "Charlie",
+        email: "charlie2@example.com",
+        password: "hashe2dpassword3",
+        balance: 20000
+      },      {
+        name: "Charlie",
+        email: "charli23e@example.com",
+        password: "hashedpassword3",
+        balance: 20000
+      },      {
+        name: "Charl3ie",
+        email: "charli3e@example.com",
+        password: "hashedpassword3",
+        balance: 20000
+      },      {
+        name: "Charlie",
+        email: "charl4ie@example.com",
+        password: "hashedpassword3",
+        balance: 20000
+      },      {
+        name: "Charlie",
+        email: "charl5ie@example.com",
+        password: "hashedpassword3",
+        balance: 20000
+      },
     ]);
   },
 

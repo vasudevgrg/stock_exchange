@@ -16,7 +16,7 @@ import User from "./user.model";
 @Table({
   tableName: "markets",
   underscored: true,
-  timestamps: true,
+  timestamps: false,
 })
 class Market extends BaseModel<Market> {
   @NotEmpty
@@ -26,10 +26,6 @@ class Market extends BaseModel<Market> {
   @NotEmpty
   @Column(DataType.INTEGER)
   current_price: number;
-
-  @AllowNull(false)
-  @Column(DataType.DATE)
-  created_at: Date;
 
   // Relations
 

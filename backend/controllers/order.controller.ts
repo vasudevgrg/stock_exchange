@@ -12,6 +12,7 @@ export const sellStocksOrder = async (
     await ordersService.sellStockService(req.body);
     res.status(201).json({ message: "stocks sold successfully." });
   } catch (err) {
+    console.log('err: ', err);
     next(err);
   }
 };
@@ -32,6 +33,7 @@ export const buyStocksOrder = async (
 
     res.status(201).json({ message: "stocks bought successfully." });
   } catch (err) {
+    console.log('err: ', err);
     next(err);
   }
 };

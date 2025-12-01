@@ -8,22 +8,16 @@ export = {
         id: 1,
         name: "BTC/INR",
         current_price: 0,
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         id: 2,
         name: "ETH/INR",
         current_price: 0,
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         id: 3,
         name: "BNB/INR",
         current_price: 0,
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       // Add more markets as required
     ]);

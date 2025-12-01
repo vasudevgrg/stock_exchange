@@ -1,10 +1,7 @@
 import {
   Table,
   Column,
-  Model,
   DataType,
-  PrimaryKey,
-  AutoIncrement,
   AllowNull,
   HasMany,
   Default,
@@ -19,7 +16,7 @@ import Market from "./market.model";
 @Table({
   tableName: "users",
   underscored: true,
-  timestamps: true,
+  timestamps: false,
   paranoid: true
 })
 class User extends BaseModel<User> {

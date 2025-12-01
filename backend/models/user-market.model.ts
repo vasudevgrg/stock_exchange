@@ -14,7 +14,7 @@ import User from "./user.model";
 @Table({
   tableName: "user-markets",
   underscored: true,
-  timestamps: true,
+  timestamps: false,
   indexes: [
     {
       unique: true,

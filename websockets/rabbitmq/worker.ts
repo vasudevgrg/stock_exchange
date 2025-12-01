@@ -1,8 +1,8 @@
 import { ConsumerTypes } from "./consumer-types";
 import { connectRabbitMQ, getRabbitChannel, closeRabbitMQ } from "./rabbitmq";
 
-const QUEUE_NAME = 'stock.stock_backend_queue';
-const EXCHANGE_NAME = 'stock.api_server_exchange';
+const QUEUE_NAME = 'stock."BTC/INR"';
+const EXCHANGE_NAME = 'stock."BTC/INR"';
 
 const startWorker = async () => {
     await connectRabbitMQ()

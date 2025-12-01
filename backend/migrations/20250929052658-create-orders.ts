@@ -21,7 +21,7 @@ module.exports = {
         allowNull: false,
       },
       quantity: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
       market_id: {
@@ -47,6 +47,7 @@ module.exports = {
       status: {
         type: DataTypes.ENUM,
         values: Object.values(Status),
+        defaultValue: Status.PENDING,
         allowNull: false,
       },
     });

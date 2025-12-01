@@ -12,7 +12,7 @@
     "seed:undo": "npx sequelize-cli db:seed:undo:all",
     "db:create": "npx sequelize-cli db:create",
     "db:drop": "npx sequelize-cli db:drop",
-    "migrate:build": "npm run build && npx sequelize-cli db:migrate --config dist/config/config.js --migrations-path dist/migrations",
+    "up": "npm run build && npx sequelize-cli db:migrate --config dist/config/config.js --migrations-path dist/migrations",
     "undo": "npx sequelize-cli db:migrate:undo",
     "down": "npx sequelize-cli db:migrate:undo:all"
   },

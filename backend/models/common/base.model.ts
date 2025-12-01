@@ -14,13 +14,13 @@ class BaseModel<T extends object> extends Model<T> {
   @Column(DataTypes.INTEGER)
   declare id: number;
 
-  @Default(DataTypes.NOW)
-  @Column(DataTypes.DATE)
-  declare created_at: Date;
+  // @Default(DataTypes.NOW)
+  // @Column(DataTypes.DATE)
+  // declare created_at: Date;
 
-  @AllowNull(true)
-  @Column(DataTypes.DATE)
-  declare updated_at: Date | null;
+  // @AllowNull(true)
+  // @Column(DataTypes.DATE)
+  // declare updated_at: Date | null;
 
   @AllowNull(true)
   @Column(DataTypes.DATE)

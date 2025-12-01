@@ -23,6 +23,7 @@ export abstract class BaseRepository<T extends Model> {
   }
 
   async findOne(options?: FindOptions<Attributes<T>>): Promise<T | null> {
+    console.log('options: ', options);
     return await this.model.findOne(options);
   }
 

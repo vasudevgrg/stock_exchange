@@ -44,7 +44,7 @@ class OrdersService {
       where: { id: market_id },
     });
 
-    if(!market) throw new Error("market doesnt exist.");
+    if (!market) throw new Error("market doesnt exist.");
     const user = await this.userRepository.findOne({ where: { id: user_id } });
     let totalPrice = quantity * price;
 
@@ -59,6 +59,7 @@ class OrdersService {
         quantity: quantity,
         market_id,
         user_id,
+        status: Status.PENDING
       });
       const sellOrders = await this.orderRepository.find({
         where: {
@@ -131,7 +132,7 @@ class OrdersService {
     const market = await this.marketRepository.findOne({
       where: { id: market_id },
     });
-        if(!market) throw new Error("market doesnt exist.");
+    if (!market) throw new Error("market doesnt exist.");
 
     let totalPrice = quantity * price;
     const order = await this.orderRepository.create({
@@ -140,6 +141,7 @@ class OrdersService {
       quantity: quantity,
       market_id,
       user_id,
+      status: Status.PENDING
     });
     const buyOrders = await this.orderRepository.find({
       where: {
@@ -181,6 +183,7 @@ class OrdersService {
         price: price,
         quantity: totalQuantity,
       });
+      console.log('trade: ', trade);
 
       await publishMessage({
         marketSymbol: market.name,
@@ -203,18 +206,18 @@ class OrdersService {
   }
 
   async getCurrentOrderBook(market_id: number) {
-    const  buyOrders = await this.orderRepository.find({
+    const buyOrders = await this.orderRepository.find({
       where: {
         market_id: market_id,
-        type: 'buy',
-        status: Status.PENDING
+        type: "buy",
+        status: Status.PENDING,
       },
       attributes: [
-        sequelize.fn('sum', sequelize.col('price'), 'group_by_price')
+        // sequelize.fn('sum', sequelize.col('price'), 'group_by_price')
       ],
-      group: ['price'],
-      raw: true
-    })
+      group: ["price"],
+      raw: true,
+    });
   }
 }
 

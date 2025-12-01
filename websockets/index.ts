@@ -1,6 +1,7 @@
 import express from "express";
 import { WebsocketManager } from "./websocker-manager";
 import cors from 'cors';
+import { connectRabbitMQ } from "./rabbitmq/rabbitmq";
 
 const app = express();
 app.use(express.json());
@@ -10,21 +11,22 @@ app.use(cors({
 
 const PORT = 9000;
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
+  await connectRabbitMQ();
   console.log(`Server listening on port ${PORT}`);
   console.log(
-    `WebSocket endpoint: ws://localhost:${PORT}?market_symbol=BTC-USD`
+    `WebSocket endpoint: ws://localhost:${PORT}`
   );
 });
 
 const wsManager = WebsocketManager.getInstance();
 wsManager.attachToServer(server);
 
-// app.post('/subscribe', (req, res) => {
-//     const {market_symbol, ws} = req.body;
-//     wsManager.
-
-// })
+app.post('/subscribe', (req, res) => {
+    const {market_symbol, ws} = req.body;
+    wsManager.addToRoom(market_symbol, ws);
+  return {message: "user added to room"};
+})
 
 app.post("/publish", (req, res) => {
     console.log('req: ', req.body);
