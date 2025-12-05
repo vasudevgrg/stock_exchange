@@ -3,12 +3,10 @@ import  MarketRoutes from './market.route';
 import  OrderRoutes from './order.route';
 
 const router = express.Router();
-console.log("👾");
 
 router.get('/', (req, res)=> {
     return res.send(" this is stock backend");
 })
-
 router.use('/orders', OrderRoutes);
 router.use('/markets', MarketRoutes);
 

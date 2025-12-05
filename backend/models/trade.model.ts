@@ -5,7 +5,6 @@ import {
   DataType,
   AllowNull,
   ForeignKey,
-  BelongsTo,
 } from "sequelize-typescript";
 import Market from "./market.model";
 
