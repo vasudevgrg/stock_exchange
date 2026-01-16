@@ -1,8 +1,12 @@
 backend/node_modules
 backend/dist
 
-api-server/node_modules
-api-server/dist
+api/node_modules
+api/dist
+
+
+engine/node_modules
+engine/dist
 
 websockets/node_modules
 websockets/dist
