@@ -8,6 +8,6 @@ app.use(express.json());
 
 
 
-app.listen(3000, () => {
-    console.log('listening to 3000');
+app.listen(3002, () => {
+    console.log('listening to 3002');
 })

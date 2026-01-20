@@ -15,6 +15,11 @@ export interface Fill {
   marketOrderId: string;
 }
 
+export enum OrderSide {
+    BUY='buy',
+    SELL= 'sell'
+}
+
 export class OrderBook {
   bids: Order[];
   asks: Order[];
