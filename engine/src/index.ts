@@ -8,8 +8,15 @@ async function main() {
 
     console.log('connected to redis');
 
-    const res = await redisCLient.lPop('messages');
-    if(!res) return;
-    engine.process(JSON.parse(res));
+    while(true) {
+
+        const res = await redisCLient.lPop('messages');
+        if(!res) {
+
+        }else{
+
+            engine.process(JSON.parse(res));
+        }
+    }
 }
 main();

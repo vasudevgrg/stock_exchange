@@ -1,6 +1,6 @@
 import { OrderSide } from "../trade/orderbook"
 
-export  const CREATE_ORDER ='CREATE_ORDER'
+export  const CREATE_ORDER ='create_order'
 
 export type fromApi = {
     type: typeof CREATE_ORDER,

@@ -26,9 +26,9 @@ export class Engine {
       this.OrderBooks = data.orderbooks.map(
         (o: any) =>
           new OrderBook(
-            o.baseAsset,
             o.bids,
             o.asks,
+            o.baseAsset,
             o.lastTradeId,
             o.currentPrice,
           ),
@@ -52,14 +52,16 @@ export class Engine {
     fs.writeFileSync("./snapshot.json", JSON.stringify(snapshot));
   }
 
-  process({ message, clientId }: { message: fromApi; clientId: string }) {
+  async process({ message, clientId }: { message: fromApi; clientId: string }) {
     switch (message.type) {
       case CREATE_ORDER:
         try {
           const { market, price, quantity, side, userId } = message.data;
 
           const res = this.createOrder(market, price, quantity, side, userId);
-          RedisManager.getInstance().sendToApi(clientId, res);
+          console.log("res:rengine ", res);
+          console.log('clientId: ', clientId);
+          await RedisManager.getInstance().sendToApi(clientId, res);
         } catch (error) {}
     }
   }
@@ -71,12 +73,10 @@ export class Engine {
     side: OrderSide,
     userId: string,
   ) {
-    const currentOrderbook = this.OrderBooks.filter(
-      (o) => o.ticker() == market,
-    );
-    const baseAsset = market.split("_")[0];
-    const quoteAsset = market.split("_")[1];
+    const currentOrderbook = this.OrderBooks.find((o) => o.ticker() === market);
 
+    const baseAsset = market.split("/")[0];
+    const quoteAsset = market.split("/")[1];
     this.checkAndLockFunds(
       baseAsset,
       quoteAsset,
@@ -85,8 +85,8 @@ export class Engine {
       price,
       quantity,
     );
-
-    return currentOrderbook[0].addOrder({
+    console.log("currentOrderbook: ", currentOrderbook);
+    return currentOrderbook.addOrder({
       price: Number(price),
       quantity: Number(quantity),
       side,
@@ -106,9 +106,15 @@ export class Engine {
     price: string,
     quantity: string,
   ) {
-    const updatedValues = new Map();
     if (side == OrderSide.BUY) {
-      const balance = this.balances?.get(userId)?.quoteAsset?.available;
+      const balance = this.balances?.get(userId)?.[quoteAsset]?.available;
+      console.log(
+        "this.balances?.get(userId)?.quoteAsset: ",
+        this.balances?.get(userId)?.[quoteAsset],
+      );
+      console.log("userId: ", userId);
+      console.log("quoteAsset: ", quoteAsset);
+      console.log("balance: ", balance);
       if (!balance) throw new Error("USer balance not found");
       const expectedValue = Number(price) * Number(quantity);
       if (balance && balance < expectedValue) {
@@ -116,7 +122,7 @@ export class Engine {
       }
 
       this.balances.set(userId, {
-        quoteAsset: {
+        [quoteAsset]: {
           available: balance - expectedValue,
           locked: expectedValue,
         },

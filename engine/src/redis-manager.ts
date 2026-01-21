@@ -10,7 +10,7 @@ export class RedisManager {
     }
 
     public static getInstance() {
-        if(!this.getInstance) {
+        if(!this.instance) {
             this.instance = new RedisManager();
         }
 

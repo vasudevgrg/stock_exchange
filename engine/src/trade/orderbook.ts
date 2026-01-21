@@ -92,7 +92,7 @@ export class OrderBook {
         this.asks[i].userId != order.userId
       ) {
         let qty = Math.min(
-          executedQuantity - order.quantity,
+          order.quantity - executedQuantity,
           this.asks[i].quantity,
         );
         executedQuantity += qty;
@@ -150,5 +150,9 @@ export class OrderBook {
       }
     }
     return { fills, executedQuantity };
+  }
+
+  getDepth() {
+
   }
 }
