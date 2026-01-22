@@ -1,6 +1,9 @@
 backend/node_modules
 backend/dist
 
+db/node_modules
+db/dist
+
 api/node_modules
 api/dist
 

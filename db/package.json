@@ -1,0 +1,28 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -b",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/pg": "^8.16.0",
+    "express": "^5.2.1",
+    "pg": "^8.17.2",
+    "pg-hstore": "^2.3.4",
+    "redis": "^5.10.0",
+    "sequelize": "^6.37.7",
+    "sequelize-typescript": "^2.1.6",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.5"
+  }
+}
