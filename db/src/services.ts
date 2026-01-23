@@ -25,9 +25,6 @@ export class DbProcessor {
                 }catch(error) {
                     throw new Error('error while trading error')
                 }
-
-            
-
         }
     }
 

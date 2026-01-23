@@ -1,0 +1,303 @@
+asyncapi: 3.0.0
+info:
+  title: Attendance Control events - Academic Teaching Domain
+  version: 1.0.0
+  description: |
+    This definition corresponds to all events needed for attendance microservice
+  contact:
+    name: DA/CE Domain
+    email: team-interstellar-aaaabz3xxap7igpnekzvabk5mm@ctdesarrollo.slack.com
+defaultContentType: application/json
+servers:
+  development:
+    host: 'localhost:{port}'
+    protocol: amqp
+    description: >-
+      Local broker raised with docker
+      (https://registry.hub.docker.com/_/rabbitmq/)
+    variables:
+      port:
+        default: '5672'
+        enum:
+          - '5672'
+channels:
+  educational-planning.academic-groups.group_configured:
+    address: educational-planning.academic-groups.group_configured
+    messages:
+      receiveGroupConfigured:
+        $ref: '#/components/messages/GroupConfigured'
+    description: >
+      Process where an `academic group` has been created and configured  with
+      its required data to allow students to be assigned to it.
+  educational-planning.academic-groups.students_added:
+    address: educational-planning.academic-groups.students_added
+    messages:
+      receiveStudentsAssigned:
+        $ref: '#/components/messages/StudentsAssigned'
+    description: >
+      Process where a student is assigned to an `academic_group` previously
+      configured. This indicates the student is able to receive the content of
+      the subject the group belongs to.
+operations:
+  educational-planning.academic-groups.group_configured.receive:
+    action: receive
+    channel:
+      $ref: '#/channels/educational-planning.academic-groups.group_configured'
+    messages:
+      - $ref: >-
+          #/channels/educational-planning.academic-groups.group_configured/messages/receiveGroupConfigured
+  educational-planning.academic-groups.students_added.receive:
+    action: receive
+    channel:
+      $ref: '#/channels/educational-planning.academic-groups.students_added'
+    messages:
+      - $ref: >-
+          #/channels/educational-planning.academic-groups.students_added/messages/receiveStudentsAssigned
+components:
+  messages:
+    GroupConfigured:
+      name: Group configuration
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/MessageMetadata'
+          - $ref: '#/components/schemas/AcademicGroupConfigurationSchema'
+    StudentsAssigned:
+      name: Massive Student Distribution
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/MessageMetadata'
+          - $ref: '#/components/schemas/AcademicGroupDistributionSchema'
+  schemas:
+    AcademicGroupConfigurationSchema:
+      type: object
+      properties:
+        academic_group:
+          $ref: '#/components/schemas/AcademicGroupAggregate'
+    AcademicGroupDistributionSchema:
+      type: object
+      properties:
+        academic_group:
+          $ref: '#/components/schemas/AcademicGroupSimpleAggregate'
+        students:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentAggregate'
+    AcademicGroupSimpleAggregate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          default: G1V1 A1B1 VCE
+        academic_element:
+          $ref: '#/components/schemas/AcademicElementAggregate'
+        academic_period:
+          $ref: '#/components/schemas/AcademicPeriodSimpleAggregate'
+    AcademicGroupAggregate:
+      type: object
+      description: >
+        Grouping of students related to a subject impartition within an academic
+        period. 
+
+
+        **ERD table match: group**
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          default: G1V1 A1B1 VCE
+        academic_element:
+          $ref: '#/components/schemas/AcademicElementAggregate'
+        academic_period:
+          $ref: '#/components/schemas/AcademicPeriodAggregate'
+        impartation:
+          type: array
+          items:
+            - $ref: '#/components/schemas/ImpartationEntity'
+        settings:
+          description: Free-form object
+          type: object
+          patternProperties:
+            '^([a-z]+(_)*)+$':
+              type:
+                - string
+                - integer
+          example:
+            sessions_amount: 30
+            sessions_per_week: 2
+            hours_per_session: 2
+            max_absence_percentage:
+              theoretical_practical: 30
+              practical: 0
+    AcademicElementAggregate:
+      type: object
+      description: >
+        Entity related to a unit of teaching in some area made up for one or
+        more sessions. Some examples are: subject, lecture, etc.
+
+
+        **ERD table: academic_element**
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum:
+            - subject_version
+        abbr:
+          type: string
+          example: IYA024
+        version:
+          type: string
+          example: IYA024-v1
+        name_i18n:
+          $ref: '#/components/schemas/NameI18nEntity'
+    AcademicPeriodSimpleAggregate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          default: Sem 2024
+        start_date:
+          type: string
+          format: date
+          default: '2024-05-05'
+        end_date:
+          type: string
+          format: date
+          default: '2024-10-04'
+    AcademicPeriodAggregate:
+      description: |
+        Entity related to a period of time for academic purposes.
+
+        **ERD table: academic_period**
+      allOf:
+        - $ref: '#/components/schemas/AcademicPeriodSimpleAggregate'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - annual
+                - biannual
+                - infinite
+              example: biannual
+            parent_academic_period:
+              $ref: '#/components/schemas/PeriodAggregate'
+    PeriodAggregate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          default: 2024-2025
+        start_date:
+          type: string
+          format: date
+          default: '2024-05-05'
+        end_date:
+          type: string
+          format: date
+          default: '2025-03-04'
+        type:
+          type: string
+          enum:
+            - annual
+            - biannual
+            - infinite
+    SubjectAggregate:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/UuidNameAbbrComposition'
+        - properties:
+            version:
+              default: Subject-vEA
+    ImpartationEntity:
+      type: object
+      properties:
+        percentage:
+          type: number
+          format: float
+          pattern: '^(100(\.0{1,2})?|[1-9]?\d(\.\d{1,2})?)$'
+          default: 100
+        teacher:
+          $ref: '#/components/schemas/TeacherAggregate'
+    TeacherAggregate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        firstname:
+          type: string
+          default: Carmen
+        lastname:
+          type: string
+          default: Dominguez
+        email:
+          type: string
+          default: stub.email@google.com
+    StudentAggregate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        firstname:
+          type: string
+          default: Juan
+        lastname:
+          type: string
+          default: Topo
+        dni:
+          type: string
+          default: '1234567890'
+    NameI18nEntity:
+      type: object
+      properties:
+        es_ES:
+          type: string
+          default: Spanish name
+        en_US:
+          type: string
+          default: English name
+    UuidNameComposition:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          default: This is a name
+    UuidNameAbbrComposition:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          default: This is a name
+        abbr:
+          type: string
+          default: This is an abbreviation
+    MessageMetadata:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        fired_at:
+          type: string
+          format: date-time

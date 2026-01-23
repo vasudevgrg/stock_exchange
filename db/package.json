@@ -6,7 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b",
     "start": "node dist/index.js",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "db:create": "npx sequelize-cli db:create",
+    "up": "npx sequelize-cli db:migrate"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,7 @@
   "description": "",
   "dependencies": {
     "@types/pg": "^8.16.0",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "pg": "^8.17.2",
     "pg-hstore": "^2.3.4",
