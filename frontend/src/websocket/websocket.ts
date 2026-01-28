@@ -26,17 +26,6 @@ const useWebSocket = (url: string): UseWebSocketResult => {
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(message);
     }
-
-    await fetch("http://localhost:9000/publish", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: message,
-        market_symbol: "market1",
-      }),
-    });
   };
 
   return { messages, sendMessage };

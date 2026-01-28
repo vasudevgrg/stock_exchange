@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function Home() {
     const dispatch = useDispatch<AppDispatch>();
-    const {messages, sendMessage} = useWebSocket('ws://localhost:9000');
+    const {messages, sendMessage} = useWebSocket('ws://localhost:3002');
         const [input, setInput] = useState('');
 
     const handleSubmit = (e) => {
@@ -26,9 +26,9 @@ export default function Home() {
   return (
    <>
    <div style={{display: 'flex', flexDirection: 'row'}}>
-   {/* <Klines/>
+   <Klines/>
    <Depth/>
-   <BuyAndSell/> */}
+   <BuyAndSell/>
 
            <div>
             <h1>Real-time Chat</h1>
