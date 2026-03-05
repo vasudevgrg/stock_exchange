@@ -30,7 +30,7 @@ export default function Home() {
    <Depth/>
    <BuyAndSell/>
 
-           <div>
+           {/* <div>
             <h1>Real-time Chat</h1>
             <form onSubmit={handleSubmit}>
                 <input
@@ -45,7 +45,7 @@ export default function Home() {
                     <div key={index}>{msg}</div>
                 ))}
             </div>
-        </div>
+        </div> */}
 
    </div>
    </>

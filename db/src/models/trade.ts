@@ -1,37 +1,31 @@
-import { Model } from "sequelize";
+
 import {
   Column,
   DataType,
+  Model,
   PrimaryKey,
-  Table,
-  Unique,
+  Table
 } from "sequelize-typescript";
 
-interface TradeCreationAttributes {
-  id: string;
-  market: string;
-  price: string;
-  quantity: string;
-  timestamp: string;
-}
-
 @Table({
-    tableName:'trades'
+  tableName: "trades",
+  timestamps: false
 })
-export class Trade extends Model<Trade, TradeCreationAttributes> {
+export class Trade extends Model {
+
+  @PrimaryKey
   @Column(DataType.STRING)
   id!: string;
 
   @Column(DataType.STRING)
   market!: string;
 
-  @Column(DataType.STRING)
-  price!: string;
+  @Column(DataType.DECIMAL)
+  price!: number;
 
-  @Column(DataType.STRING)
-  quantity!: string;
+  @Column(DataType.DECIMAL)
+  quantity!: number;
 
-  @Column(DataType.STRING)
-  timestamp!: string;
-
+  @Column(DataType.DATE)
+  timestamp!: Date;
 }

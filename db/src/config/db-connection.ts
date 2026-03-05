@@ -1,26 +1,17 @@
 import { Sequelize, SequelizeOptions } from "sequelize-typescript";
 import 'dotenv/config';
+import { config } from "./config";
+import { Trade } from "../models/trade";
+import { Order } from "../models/order";
+import { Market } from "../models/market";
 
 
-const devOptions: SequelizeOptions = {
-  dialect: "postgres",
-  host: process.env.DB_HOST,
-  port: Number(process.env.DEV_DB_PORT) || 5432,
-  username: process.env.DB_USER,
-  password: String(process.env.DB_PASSWORD),
-  database: process.env.DB_DATABASE,
-    dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-};
+const devOptions: SequelizeOptions = config['development'];
+console.log(Trade, Order, Market)
+const sequelize = new Sequelize({
+  ...config["development"],
+  models: [Trade, Order, Market]
+});
 
-const sequelize = new Sequelize(
-  devOptions
-);
-
-//sequelize.addModels(models); 
 
 export default sequelize;

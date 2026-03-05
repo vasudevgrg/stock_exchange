@@ -7,8 +7,8 @@
     "build": "tsc -b",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
-    "db:create": "npx sequelize-cli db:create",
-    "up": "npx sequelize-cli db:migrate"
+    "db:create": "npx sequelize-cli db:create --config config/config.js --env development",
+    "up": "npx sequelize-cli db:migrate --config config/config.js --env development"
   },
   "keywords": [],
   "author": "",
