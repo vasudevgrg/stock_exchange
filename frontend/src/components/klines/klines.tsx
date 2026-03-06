@@ -1,14 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import CandlestickChart from "./chart";
+import { ChartComponent } from "./chart";
 
 const Klines = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     axios
       .get(
-        "https://api.backpack.exchange/api/v1/klines?symbol=SOL_USDC&interval=1h&startTime=1719782400&endTime=1719868800"
+        "http://localhost:3002/klines?market=TATA_INR&interval=1m"
       )
       .then((e) => {
         console.log("ssddsds", e.data);
@@ -26,8 +26,7 @@ const Klines = () => {
     }));
   return (
     <>
-      <CandlestickChart candlestickData={data} />
-      {/* <ChartComponent data= {data}></ChartComponent> */}
+      <ChartComponent data={data}></ChartComponent>
     </>
   );
 };

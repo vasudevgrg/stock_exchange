@@ -1,60 +1,54 @@
-'use client';
 
-import React, { useRef, useEffect } from 'react';
-import {
-  createChart,
-  CandlestickSeriesOptions,
-  IChartApi,
-} from 'lightweight-charts';
+import {  createChart, ColorType } from 'lightweight-charts';
+import React, { useEffect, useRef } from 'react';
 
-type CandlePoint = {
-  time: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
+export const ChartComponent = props => {
+    const {
+        data,
+        colors: {
+            backgroundColor = 'white',
+            lineColor = '#2962FF',
+            textColor = 'black',
+            areaTopColor = '#2962FF',
+            areaBottomColor = 'rgba(41, 98, 255, 0.28)',
+        } = {},
+    } = props;
+
+    const chartContainerRef = useRef();
+
+    useEffect(
+        () => {
+            const handleResize = () => {
+                chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+            };
+
+            const chart = createChart(chartContainerRef.current, {
+                layout: {
+                    background: { type: ColorType.Solid, color: backgroundColor },
+                    textColor,
+                },
+                width: 500,
+                height: 300,
+            });
+            chart.timeScale().fitContent();
+
+            const newSeries = chart.addCandlestickSeries( {upColor: areaTopColor, downColor: areaBottomColor });
+            newSeries.setData(data);
+
+            window.addEventListener('resize', handleResize);
+
+            return () => {
+                window.removeEventListener('resize', handleResize);
+
+                chart.remove();
+            };
+        },
+        [data, backgroundColor, lineColor, textColor, areaTopColor, areaBottomColor]
+    );
+
+    return (
+        <div
+            ref={chartContainerRef}
+        />
+    );
 };
-
-interface CandlestickChartProps {
-  candlestickData: CandlePoint[];
-}
-
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ candlestickData }) => {
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
-
-  useEffect(() => {
-    if (!chartContainerRef.current) return;
-
-    // Create chart
-    chartRef.current = createChart(chartContainerRef.current, {
-      layout: {
-        textColor: 'black',
-        background: { type: 'solid', color: 'white' },
-      },
-      width: chartContainerRef.current.clientWidth,
-      height: 400,
-    });
-
-    const chart = chartRef.current;
-
-    // Candlestick Series
-    const candleSeries = chart.addCandlestickSeries({
-      upColor: '#26a69a',
-      downColor: '#ef5350',
-      borderVisible: false,
-      wickUpColor: '#26a69a',
-      wickDownColor: '#ef5350',
-    } as CandlestickSeriesOptions);
-    candleSeries.setData(candlestickData);
-
-    chart.timeScale().fitContent();
-
-    // Cleanup on unmount
-    return () => chart.remove();
-  }, [candlestickData]);
-
-  return <div ref={chartContainerRef} style={{ width: '100%', height: 400 }} />;
-};
-
-export default CandlestickChart;

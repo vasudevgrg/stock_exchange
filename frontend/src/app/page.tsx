@@ -27,7 +27,6 @@ export default function Home() {
    <>
    <div style={{display: 'flex', flexDirection: 'row'}}>
    <Klines/>
-   <Depth/>
    <BuyAndSell/>
 
            {/* <div>

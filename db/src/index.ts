@@ -3,6 +3,7 @@ import { Sequelize } from "sequelize";
 import sequelize from "./config/db-connection";
 import { DbProcessor } from "./services";
 import { createKlineViews } from "./views/kline-views";
+import {refreshViewInterval} from './scripts/cron-job';
 
 async function main() {
   try {
@@ -14,6 +15,7 @@ async function main() {
 
     await sequelize.sync();
     await createKlineViews();
+    refreshViewInterval();
     console.log("Connection has been established successfully.");
      
      while (true) {
