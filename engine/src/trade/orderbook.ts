@@ -153,6 +153,6 @@ export class OrderBook {
   }
 
   getDepth() {
-
+    
   }
 }

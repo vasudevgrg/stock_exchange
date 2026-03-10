@@ -16,35 +16,39 @@ export const ChartComponent = props => {
 
     const chartContainerRef = useRef();
 
-    useEffect(
-        () => {
-            const handleResize = () => {
-                chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-            };
+useEffect(() => {
+  const chart = createChart(chartContainerRef.current, {
+    layout: {
+      background: { type: ColorType.Solid, color: backgroundColor },
+      textColor,
+    },
+    width: chartContainerRef.current.clientWidth || 600,
+    height: chartContainerRef.current.clientHeight || 400,
+  });
 
-            const chart = createChart(chartContainerRef.current, {
-                layout: {
-                    background: { type: ColorType.Solid, color: backgroundColor },
-                    textColor,
-                },
-                width: 500,
-                height: 300,
-            });
-            chart.timeScale().fitContent();
+  const handleResize = () => {
+    chart.applyOptions({
+      width: chartContainerRef.current.clientWidth,
+      height: chartContainerRef.current.clientHeight,
+    });
+  };
 
-            const newSeries = chart.addCandlestickSeries( {upColor: areaTopColor, downColor: areaBottomColor });
-            newSeries.setData(data);
+  chart.timeScale().fitContent();
 
-            window.addEventListener('resize', handleResize);
+  const newSeries = chart.addCandlestickSeries({
+    upColor: areaTopColor,
+    downColor: areaBottomColor,
+  });
 
-            return () => {
-                window.removeEventListener('resize', handleResize);
+  newSeries.setData(data);
 
-                chart.remove();
-            };
-        },
-        [data, backgroundColor, lineColor, textColor, areaTopColor, areaBottomColor]
-    );
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+    chart.remove();
+  };
+}, [data]);
 
     return (
         <div
