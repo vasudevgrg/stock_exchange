@@ -20,6 +20,10 @@ ws/dist
 rabbitmq/node_modules
 rabbitmq/dist
 
+
+automate-orders/node_modules
+automate-orders/dist
+
 frontend/node_modules
 .DS_Store
 *.log

@@ -153,6 +153,37 @@ export class OrderBook {
   }
 
   getDepth() {
-    
+    const bids: {price: number,quantity: number}[]= [];
+    const asks: {price: number,quantity: number}[]= [];
+
+    for(let i=0;i< this.bids.length;i++) {
+      let bid = this.bids[i];
+      let existingBid = bids.find(b=> b.price==bid.price);
+
+      if(existingBid) {
+        existingBid.quantity+= bid.quantity
+      } else {
+        bids.push({
+          price: bid.price,
+          quantity: bid.quantity
+        })
+      }
+    }
+
+    for(let i=0;i< this.asks.length;i++) {
+      let ask = this.asks[i];
+      let existingBid = asks.find(b=> b.price==ask.price);
+
+      if(existingBid) {
+        existingBid.quantity+= ask.quantity
+      } else {
+        asks.push({
+          price: ask.price,
+          quantity: ask.quantity
+        })
+      }
+    }
+
+    return {bids, asks}
   }
 }

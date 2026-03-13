@@ -18,7 +18,7 @@ export class User {
 
   startListening() {
     this.ws.on('message', (data) => {
-        console.log('data: ', JSON.parse(data));
+        console.log('datavasudev: ', JSON.parse(data));
         
       try {
         const message = JSON.parse(data.toString());

@@ -10,8 +10,11 @@ const useWebSocket = (url: string): UseWebSocketResult => {
   const [ws, setWs] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const socket = new WebSocket(`${url}?market_symbol=market1`);
+    const socket = new WebSocket(url);
+    console.log('socket: ', socket);
     setWs(socket);
+
+    ws?.send("message", {action: "subscribe", market:"TATA/INR"})
 
     socket.onmessage = (event: MessageEvent) => {
       setMessages((prevMessages) => [...prevMessages, event.data]);

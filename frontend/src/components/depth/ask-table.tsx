@@ -9,7 +9,13 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-const AskTable = ({ asks = [] }) => {
+interface Ask {
+  price: number;
+  quantity: number;
+  total: number;
+}
+
+const AskTable = ({ asks }: { asks: Ask[] }) => {
 
   return (
     <div style={{background:"red", height:"400px", overflow:"scroll"}}>
@@ -26,7 +32,7 @@ const AskTable = ({ asks = [] }) => {
           <TableRow key={index}>
             <TableCell>{ask.price}</TableCell>
             <TableCell>{ask.quantity}</TableCell>
-            <TableCell>{ask.total}</TableCell>
+            <TableCell>{ask.price * ask.quantity}</TableCell>
           </TableRow>
         ))}
       </TableBody>

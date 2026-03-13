@@ -1,5 +1,5 @@
 import { RedisManager } from "../redis-manager";
-import { CREATE_ORDER, fromApi } from "../types/fromApi";
+import { CANCEL_ORDER, CREATE_ORDER, fromApi, GET_OPEN_ORDERS } from "../types/fromApi";
 import { OrderBook, OrderSide } from "./orderbook";
 import fs from "fs";
 interface UserBalance {
@@ -63,6 +63,38 @@ export class Engine {
           console.log('clientId: ', clientId);
           await RedisManager.getInstance().sendToApi(clientId, res);
         } catch (error) {}
+      case CANCEL_ORDER: 
+        try {
+          const {orderId, market} = message.data;
+
+          const orderBook = this.OrderBooks.find(o=> o.ticker()== market);
+          const order = orderBook?.bids.find(bid=> bid.orderId== orderId) || orderBook?.asks.find(ask => ask.orderId== orderId);
+          const baseAsset = market.split('/')[0];
+          const quoteAsset = market.split('/')[1];
+
+          if(order?.side=='buy') {
+           this.balances.get(order.userId)[baseAsset].available+= (order.price*(order.quantity- order.filled));
+          
+          } else {
+            this.balances.get(order.userId)[quoteAsset].available+= (order.quantity- order.filled);
+          }
+          RedisManager.getInstance().sendToApi(clientId, {status: 'cancelled', orderId, market})
+          RedisManager.getInstance().publishMessage(market, {
+            type: 'depth',
+            data: orderBook?.getDepth()
+          })
+        }catch(err) {
+          console.log('cancel order error: ', err);
+        }
+      case GET_OPEN_ORDERS:
+        try {
+          const {market, userId} = message.data;
+          const orderBook = this.OrderBooks.find(o=> o.ticker()== market);
+          const orders = [...orderBook.bids, ...orderBook.asks].filter(o=> o.userId== userId);
+          RedisManager.getInstance().sendToApi(clientId, {status: 'open_orders', orders})
+        }catch(err) {
+          console.log('get open orders error: ', err);
+        }
     }
   }
 
@@ -108,13 +140,7 @@ export class Engine {
   ) {
     if (side == OrderSide.BUY) {
       const balance = this.balances?.get(userId)?.[quoteAsset]?.available;
-      console.log(
-        "this.balances?.get(userId)?.quoteAsset: ",
-        this.balances?.get(userId)?.[quoteAsset],
-      );
-      console.log("userId: ", userId);
-      console.log("quoteAsset: ", quoteAsset);
-      console.log("balance: ", balance);
+
       if (!balance) throw new Error("USer balance not found");
       const expectedValue = Number(price) * Number(quantity);
       if (balance && balance < expectedValue) {
@@ -130,7 +156,7 @@ export class Engine {
     } else {
       const balance = this.balances?.get(userId)?.baseAsset?.available;
       if (!balance) throw new Error("USer balance not found");
-      const expectedValue = Number(price) * Number(quantity);
+      const expectedValue = Number(quantity);
       if (balance && balance < expectedValue) {
         throw new Error(" insufficient balance");
       }
