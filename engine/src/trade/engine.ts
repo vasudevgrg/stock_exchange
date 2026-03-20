@@ -1,5 +1,10 @@
 import { RedisManager } from "../redis-manager";
-import { CANCEL_ORDER, CREATE_ORDER, fromApi, GET_OPEN_ORDERS } from "../types/fromApi";
+import {
+  CANCEL_ORDER,
+  CREATE_ORDER,
+  fromApi,
+  GET_OPEN_ORDERS,
+} from "../types/fromApi";
 import { OrderBook, OrderSide } from "./orderbook";
 import fs from "fs";
 interface UserBalance {
@@ -33,9 +38,7 @@ export class Engine {
             o.currentPrice,
           ),
       );
-      console.log("this.OrderBooks: ", this.OrderBooks);
       this.balances = new Map(data.balances);
-      console.log("this.balances : ", this.balances);
     }
 
     setInterval(() => {
@@ -59,41 +62,73 @@ export class Engine {
           const { market, price, quantity, side, userId } = message.data;
 
           const res = this.createOrder(market, price, quantity, side, userId);
-          console.log("res:rengine ", res);
-          console.log('clientId: ', clientId);
           await RedisManager.getInstance().sendToApi(clientId, res);
         } catch (error) {}
-      case CANCEL_ORDER: 
+      case CANCEL_ORDER:
         try {
-          const {orderId, market} = message.data;
+          const { orderId, market } = message.data;
 
-          const orderBook = this.OrderBooks.find(o=> o.ticker()== market);
-          const order = orderBook?.bids.find(bid=> bid.orderId== orderId) || orderBook?.asks.find(ask => ask.orderId== orderId);
-          const baseAsset = market.split('/')[0];
-          const quoteAsset = market.split('/')[1];
+          const orderBook = this.OrderBooks.find((o) => o.ticker() == market);
+          const order =
+            orderBook?.bids.find((bid) => bid.orderId == orderId) ||
+            orderBook?.asks.find((ask) => ask.orderId == orderId);
+          const baseAsset = market.split("/")[0];
+          const quoteAsset = market.split("/")[1];
+if (!order) {
+  console.log("⚠️ Order already cancelled:", orderId);
+  return;
+}
+          console.log('order: ', order.userId);
+          const userBalance = this.balances.get(order.userId);
 
-          if(order?.side=='buy') {
-           this.balances.get(order.userId)[baseAsset].available+= (order.price*(order.quantity- order.filled));
-          
-          } else {
-            this.balances.get(order.userId)[quoteAsset].available+= (order.quantity- order.filled);
+          if (!userBalance) {
+            throw new Error(`User balance not found for ${order.userId}`);
           }
-          RedisManager.getInstance().sendToApi(clientId, {status: 'cancelled', orderId, market})
+
+          const remaining = order.quantity - order.filled;
+
+          if (order.side === "buy") {
+            // BUY → refund INR
+            if (!userBalance[quoteAsset]) {
+              userBalance[quoteAsset] = { available: 0, locked: 0 };
+            }
+
+            userBalance[quoteAsset].available += order.price * remaining;
+            userBalance[quoteAsset].locked -= order.price * remaining;
+          } else {
+            // SELL → refund TATA
+            if (!userBalance[baseAsset]) {
+              userBalance[baseAsset] = { available: 0, locked: 0 };
+            }
+
+            userBalance[baseAsset].available += remaining;
+            userBalance[baseAsset].locked -= remaining;
+          }
+          RedisManager.getInstance().sendToApi(clientId, {
+            status: "cancelled",
+            orderId,
+            market,
+          });
           RedisManager.getInstance().publishMessage(market, {
-            type: 'depth',
-            data: orderBook?.getDepth()
-          })
-        }catch(err) {
-          console.log('cancel order error: ', err);
+            type: "depth",
+            data: orderBook?.getDepth(),
+          });
+        } catch (err) {
+          console.log("cancel order error: ", err);
         }
       case GET_OPEN_ORDERS:
         try {
-          const {market, userId} = message.data;
-          const orderBook = this.OrderBooks.find(o=> o.ticker()== market);
-          const orders = [...orderBook.bids, ...orderBook.asks].filter(o=> o.userId== userId);
-          RedisManager.getInstance().sendToApi(clientId, {status: 'open_orders', orders})
-        }catch(err) {
-          console.log('get open orders error: ', err);
+          const { market, userId } = message.data;
+          const orderBook = this.OrderBooks.find((o) => o.ticker() == market);
+          const orders = [...orderBook.bids, ...orderBook.asks].filter(
+            (o) => o.userId == userId,
+          );
+          RedisManager.getInstance().sendToApi(clientId, {
+            status: "open_orders",
+            orders,
+          });
+        } catch (err) {
+          console.log("get open orders error: ", err);
         }
     }
   }
@@ -117,7 +152,6 @@ export class Engine {
       price,
       quantity,
     );
-    console.log("currentOrderbook: ", currentOrderbook);
     return currentOrderbook.addOrder({
       price: Number(price),
       quantity: Number(quantity),

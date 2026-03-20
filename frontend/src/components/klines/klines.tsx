@@ -8,7 +8,7 @@ const Klines = () => {
   useEffect(() => {
     axios
       .get(
-        "http://localhost:3002/klines?market=TATA_INR&interval=1m"
+        "http://localhost:3002/klines?market=TATA/INR&interval=1m"
       )
       .then((e) => {
         console.log("ssddsds", e.data);

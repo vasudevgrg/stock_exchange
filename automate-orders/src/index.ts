@@ -1,64 +1,90 @@
 import axios from "axios";
 
-async function main() {
-    const orders = await axios.get('http://localhost:8080/orders/open', {
-        params: {
-            market: 'TATA/INR',
-            userId: '1'
-        }
-    })
+const MARKET = "TATA/INR";
+const USER_ID = "1";
 
-    const price = Math.random()*1000;
+let midPrice = 1000;
 
-    const cancelBuyOrders = orders.data.filter(order=> {
-        return order.side === 'buy' && order.price < price
-    })
-
-    const cancelSellOrders = orders.data.filter(order=> {
-        return order.side === 'sell' && order.price > price
-    })
-
-    for(let order of cancelBuyOrders) {
-        await axios.delete('http://localhost:8080/orders', {
-            data: {
-                orderId: order.orderId,
-                market: 'TATA/INR'
-            }
-        })
-    }
-
-    for(let order of cancelSellOrders) {
-        await axios.delete('http://localhost:8080/orders', {
-            data: {
-                orderId: order.orderId,
-                market: 'TATA/INR'
-            }
-        })
-    }
-
-    for(let i=0;i< cancelBuyOrders.length;i++) {
-        await axios.post('http://localhost:8080/orders', {
-            market: 'TATA/INR',
-            price: (price - Math.random()*10).toFixed(2),
-            quantity: (Math.random()*10).toFixed(2),
-            side: 'buy',
-            userId: '1'
-        });
-    }
-
-    for(let i=0;i< cancelSellOrders.length;i++) {
-        await axios.post('http://localhost:8080/orders', {
-            market: 'TATA/INR',
-            price: (price + Math.random()*10).toFixed(2),
-            quantity: (Math.random()*10).toFixed(2),
-            side: 'sell',
-            userId: '1'
-        });
-    }       
+function getRandom(min: number, max: number) {
+  return Math.random() * (max - min) + min;
 }
 
-main(); // run immediately
+// simulate market movement
+function updateMidPrice() {
+  const drift = getRandom(-1, 1); // small movement
+  midPrice = Math.max(900, Math.min(1100, midPrice + drift));
+}
 
-setInterval(() => {
-    main();
-}, 3000);
+async function main() {
+  try {
+    updateMidPrice();
+
+    const { data } = await axios.get(
+      "http://localhost:3002/orders/open",
+      {
+        params: { market: MARKET, userId: USER_ID }
+      }
+    );
+
+    const orders = data.orders;
+
+    const bestBid = midPrice - 0.3;
+    const bestAsk = midPrice + 0.3;
+
+    // cancel far orders
+    const cancelOrders = orders.filter((o: any) => {
+      if (o.side === "buy") return o.price < bestBid - 5;
+      if (o.side === "sell") return o.price > bestAsk + 5;
+    });
+
+    // 🚀 batch cancel
+    await Promise.all(
+      cancelOrders.map((order: any) =>
+        axios.delete("http://localhost:3002/orders", {
+          data: { orderId: order.orderId, market: MARKET }
+        })
+      )
+    );
+
+    // create new liquidity
+    const newOrders = [];
+
+    // 🟢 BUY ORDERS
+    for (let i = 0; i < 10; i++) {
+      newOrders.push({
+        market: MARKET,
+        price: (bestBid - i * 0.2 - getRandom(0, 0.1)).toFixed(2),
+        quantity: getRandom(1, 10).toFixed(2),
+        side: "buy",
+        userId: USER_ID
+      });
+    }
+
+    // 🔴 SELL ORDERS
+    for (let i = 0; i < 10; i++) {
+      newOrders.push({
+        market: MARKET,
+        price: (bestAsk + i * 0.2 + getRandom(0, 0.1)).toFixed(2),
+        quantity: getRandom(1, 10).toFixed(2),
+        side: "sell",
+        userId: USER_ID
+      });
+    }
+
+    // 🚀 batch place
+    await Promise.all(
+      newOrders.map((order) =>
+        axios.post("http://localhost:3002/orders", order)
+      )
+    );
+
+    console.log(
+      `Market updated → mid: ${midPrice.toFixed(2)} | orders: ${newOrders.length}`
+    );
+  } catch (err) {
+    console.error("Error:", err.message);
+  }
+}
+
+// run every 2 sec
+setInterval(main, 3000);

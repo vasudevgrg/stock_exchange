@@ -22,6 +22,8 @@ export class RedisManager {
     }
 
     public publishMessage(channel: string, message: any) {
+        console.log('message: ', message);
+        console.log('channel: ', channel);
         this.client.publish(channel, JSON.stringify(message));
     }
 

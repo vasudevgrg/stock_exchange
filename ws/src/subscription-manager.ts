@@ -28,6 +28,7 @@ export class SubscriptionManager {
 
         this.subscriptions.get(market)?.push(id);
         this.client.subscribe(market, (message)=> {
+            console.log('market: ', market);
             this.subscriptions.get(market)?.forEach(id => {
                 UserManager.getInstance().getUser(id)?.emit(message)
             })

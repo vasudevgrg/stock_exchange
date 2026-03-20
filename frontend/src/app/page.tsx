@@ -25,7 +25,7 @@ export default function Home() {
         <Klines />
         <BuyAndSell />
     <Depth/>
-{/* 
+
         <div>
           <h1>Real-time Chat</h1>
           <form onSubmit={handleSubmit}>
@@ -42,7 +42,7 @@ export default function Home() {
               <div key={index}>{msg}</div>
             ))}
           </div>
-        </div> */}
+        </div>
       </div>
     </>
   );

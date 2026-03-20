@@ -43,7 +43,7 @@ export class OrderBook {
   }
 
   ticker() {
-    return `${this.baseAsset}_${this.quoteAsset}`;
+    return `${this.baseAsset}/${this.quoteAsset}`;
   }
 
   getSnapshot() {

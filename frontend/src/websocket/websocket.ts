@@ -1,37 +1,88 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UseWebSocketResult {
   messages: string[];
   sendMessage: (message: string) => void;
+  isConnected: boolean;
 }
+
+const HEARTBEAT_VALUE = 1;
+const HEARTBEAT_TIMEOUT = 6000; // 5s + buffer
 
 const useWebSocket = (url: string): UseWebSocketResult => {
   const [messages, setMessages] = useState<string[]>([]);
-  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  const ws = useRef<WebSocket | null>(null);
+  const pingTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const resetHeartbeat = useCallback(() => {
+    if (pingTimeout.current) {
+      clearTimeout(pingTimeout.current);
+    }
+
+    pingTimeout.current = setTimeout(() => {
+      console.log("❌ Heartbeat timeout → closing socket");
+      ws.current?.close();
+    }, HEARTBEAT_TIMEOUT);
+  }, []);
 
   useEffect(() => {
-    const socket = new WebSocket(url);
-    console.log('socket: ', socket);
-    setWs(socket);
+    ws.current = new WebSocket(url);
 
-    ws?.send("message", {action: "subscribe", market:"TATA/INR"})
-
-    socket.onmessage = (event: MessageEvent) => {
-      setMessages((prevMessages) => [...prevMessages, event.data]);
+    ws.current.onopen = () => {
+      console.log("✅ WebSocket connected");
+      setIsConnected(true);
+      resetHeartbeat();
     };
+
+    ws.current.onmessage = async (event: MessageEvent) => {
+      const data = event.data;
+
+      if (data instanceof Blob) {
+        const buffer = await data.arrayBuffer();
+        const view = new Uint8Array(buffer);
+
+        if (view[0] === HEARTBEAT_VALUE) {
+          ws.current?.send(view);
+
+          resetHeartbeat();
+          return;
+        }
+      }
+
+      setMessages((prev) => [...prev, data]);
+    };
+
+    ws.current.onclose = () => {
+      console.log("🔌 WebSocket closed");
+      setIsConnected(false);
+
+      if (pingTimeout.current) {
+        clearTimeout(pingTimeout.current);
+      }
+    };
+
+    // ws.current.onerror = (err) => {
+    //   console.error("❌ WebSocket error:", err);
+    // };
 
     return () => {
-      socket.close();
+      ws.current?.close();
+      if (pingTimeout.current) {
+        clearTimeout(pingTimeout.current);
+      }
     };
-  }, [url]);
+  }, [url, resetHeartbeat]);
 
-  const sendMessage = async (message: string) => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(message);
+  const sendMessage = useCallback((message: string) => {
+    console.log('message: ', message);
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(message);
     }
-  };
+  }, []);
 
-  return { messages, sendMessage };
+  return { messages, sendMessage, isConnected };
 };
 
 export default useWebSocket;
