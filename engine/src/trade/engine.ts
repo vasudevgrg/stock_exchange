@@ -74,11 +74,12 @@ export class Engine {
             orderBook?.asks.find((ask) => ask.orderId == orderId);
           const baseAsset = market.split("/")[0];
           const quoteAsset = market.split("/")[1];
-if (!order) {
-  console.log("⚠️ Order already cancelled:", orderId);
-  return;
-}
-          console.log('order: ', order.userId);
+          if (!order) {
+            console.log("⚠️ Order already cancelled:", orderId);
+            return {message:'order doesnt exist'}
+            return;
+          }
+          console.log("order: ", order.userId);
           const userBalance = this.balances.get(order.userId);
 
           if (!userBalance) {

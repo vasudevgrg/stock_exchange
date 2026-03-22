@@ -14,11 +14,10 @@ export class User {
     this.id = id;
     this.ws = ws;
 
-    // ✅ initialize
     (this.ws as any).isAlive = true;
 
     this.startListening();
-    this.startHeartbeat();
+    // this.startHeartbeat();
   }
 
   emit(message: any) {
@@ -58,6 +57,7 @@ export class User {
       let parsed;
       try {
         parsed = JSON.parse(data.toString());
+        console.log('parsed: ', parsed);
       } catch (err) {
         console.error("Invalid JSON:", data.toString());
         return;

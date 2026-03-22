@@ -10,23 +10,23 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
-  const { messages, sendMessage } = useWebSocket("ws://localhost:3003");
+  // const { messages, sendMessage } = useWebSocket("ws://localhost:3003");
   const [input, setInput] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    sendMessage(input);
-    setInput("");
-  };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   sendMessage(input);
+  //   setInput("");
+  // };
 
   return (
     <>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <Klines />
-        <BuyAndSell />
+        {/* <Klines />
+        <BuyAndSell /> */}
     <Depth/>
 
-        <div>
+        {/* <div>
           <h1>Real-time Chat</h1>
           <form onSubmit={handleSubmit}>
             <input
@@ -42,7 +42,7 @@ export default function Home() {
               <div key={index}>{msg}</div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );
