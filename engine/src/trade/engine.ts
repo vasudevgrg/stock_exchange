@@ -42,6 +42,7 @@ export class Engine {
     }
 
     setInterval(() => {
+      console.log('working 3 sec')
       this.saveSnapShot();
     }, 1000 * 3);
   }
@@ -52,21 +53,26 @@ export class Engine {
       balances: Array.from(this.balances.entries()),
     };
 
+    console.log('snapshot: ', snapshot.orderbooks[0].bids);
     fs.writeFileSync("./snapshot.json", JSON.stringify(snapshot));
   }
 
   async process({ message, clientId }: { message: fromApi; clientId: string }) {
+    console.log('message: ', message);
     switch (message.type) {
       case CREATE_ORDER:
         try {
           const { market, price, quantity, side, userId } = message.data;
+          console.log('market: ', market);
 
           const res = this.createOrder(market, price, quantity, side, userId);
           await RedisManager.getInstance().sendToApi(clientId, res);
         } catch (error) {}
+        break;
       case CANCEL_ORDER:
         try {
           const { orderId, market } = message.data;
+          console.log('market: ', market);
 
           const orderBook = this.OrderBooks.find((o) => o.ticker() == market);
           const order =
@@ -117,6 +123,7 @@ export class Engine {
         } catch (err) {
           console.log("cancel order error: ", err);
         }
+        break;
       case GET_OPEN_ORDERS:
         try {
           const { market, userId } = message.data;
@@ -131,6 +138,7 @@ export class Engine {
         } catch (err) {
           console.log("get open orders error: ", err);
         }
+        break;
     }
   }
 
@@ -188,6 +196,8 @@ export class Engine {
           locked: expectedValue,
         },
       });
+
+      console.log(this.balances.get(userId))
     } else {
       const balance = this.balances?.get(userId)?.baseAsset?.available;
       if (!balance) throw new Error("USer balance not found");

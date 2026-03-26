@@ -85,6 +85,7 @@ export class OrderBook {
   matchBids(order: Order) {
     let executedQuantity = 0;
     let fills: Fill[] = [];
+    console.log('this.asks.length: ', this.asks);
     for (let i = 0; i < this.asks.length; i++) {
       if (
         this.asks[i].price <= order.price &&
